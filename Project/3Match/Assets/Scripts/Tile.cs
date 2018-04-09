@@ -3,22 +3,38 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
-    private Color defaultColor;
-    private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private GameObject border;
+
+    [SerializeField]
+    private SpriteRenderer element;
+
+    public TileType type;
 
     private void Awake()
     {
-        this.spriteRenderer = this.GetComponent<SpriteRenderer>();
-        this.defaultColor = this.spriteRenderer.material.color;
+        this.border.SetActive(false);
     }
 
-    private void OnMouseEnter()
+    public void SetType(TileType type)
     {
-        this.spriteRenderer.material.color = new Color(1, 0, 0, 1);
+        this.type = type;
+        this.element.material.color = type.color;
     }
 
-    private void OnMouseExit()
+    public void Select()
     {
-        this.spriteRenderer.material.color = this.defaultColor;
+        this.border.SetActive(true);
+    }
+
+    public void Deselect()
+    {
+        this.border.SetActive(false);
+    }
+
+    public void Clear()
+    {
+        this.type = null;
+        this.element.material.color = Color.white;
     }
 }
