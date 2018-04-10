@@ -65,6 +65,11 @@ public class Board
         Vector2 firstPos = t1.transform.position;
         t1.transform.position = t2.transform.position;
         t2.transform.position = firstPos;
+
+        int t1Index = System.Array.IndexOf(this.tiles, t1);
+        int t2Index = System.Array.IndexOf(this.tiles, t2);
+        this.tiles[t1Index] = t2;
+        this.tiles[t2Index] = t1;
     }
 
     public TileType[] GetForbiddenTypes(int rowIndex, int columnIndex)
@@ -126,47 +131,8 @@ public class Board
 
         return null;
     }
-
-    public void Renumber()
-    {
-        for (int i = 0; i < this.tiles.Length; i++)
-        {
-            Tile tile = this.tiles[i];
-            
-            if (tile.type == null && tile.Row < this.RowsCount - 1)
-            {
-                int nextRow = tile.Row + 1;
-
-                while(nextRow < this.RowsCount && this.GetTile(nextRow, tile.Column).type == null)
-                {
-                    nextRow++;
-                }
-
-                if (nextRow < this.RowsCount)
-                {
-                    this.SwapTiles(tile, this.GetTile(nextRow, tile.Column));
-                }
-            }
-        }
-
-        this.Collect();
-    }
-
-    public void Recreate()
-    {
-        for (int i = 0; i < this.tiles.Length; i++)
-        {
-            Tile tile = this.tiles[i];
-
-            if (tile.type == null)
-            {
-                TileType type = GameManager.Instance.GetRandomType(tile);
-                tile.SetType(type);
-            }
-        }
-    }
     
-    public void Collect()
+    public void CollectMatches()
     {
         List<Tile> matches = new List<Tile>(); 
         for (int rowIndex = 0; rowIndex < this.RowsCount; rowIndex++)
@@ -206,16 +172,55 @@ public class Board
         }
         
         GameManager.Instance.AddPoints(matches.Count);
-        
+
         matches.ForEach(x => x.Clear());
 
         if (matches.Count > 0)
         {
-            this.Renumber();
+            this.ReorderTiles();
         }
         else
         {
-            this.Recreate();
+            this.FillEmptyTiles();
+        }
+    }
+
+    private void ReorderTiles()
+    {
+        for (int i = 0; i < this.tiles.Length; i++)
+        {
+            Tile tile = this.tiles[i];
+            
+            if (tile.type == null && tile.Row < this.RowsCount - 1)
+            {
+                int nextRow = tile.Row + 1;
+
+                while(nextRow < this.RowsCount && this.GetTile(nextRow, tile.Column).type == null)
+                {
+                    nextRow++;
+                }
+
+                if (nextRow < this.RowsCount)
+                {
+                    this.SwapTiles(tile, this.GetTile(nextRow, tile.Column));
+                }
+            }
+        }
+
+        this.CollectMatches();
+    }
+
+    public void FillEmptyTiles()
+    {
+        for (int i = 0; i < this.tiles.Length; i++)
+        {
+            Tile tile = this.tiles[i];
+
+            if (tile.type == null)
+            {
+                TileType type = GameManager.Instance.GetRandomType(tile);
+                tile.SetType(type);
+            }
         }
     }
 }

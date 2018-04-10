@@ -40,13 +40,12 @@ public class GameManager : Singleton<GameManager>
 
                 Tile tile = tileGo.GetComponent<Tile>();
                 tile.SetCoords(rowIndex, columnIndex);
-
-                TileType type = this.GetRandomType(tile);
-                tile.SetType(type);
                 
                 this.board.AddTile(tile);
             }
         }
+
+        this.board.FillEmptyTiles();
     }
 
     public TileType GetRandomType(Tile tile)
@@ -96,7 +95,7 @@ public class GameManager : Singleton<GameManager>
             if (this.board.AreNeighbors(this.selected, hittedTile))
             {
                 this.board.SwapTiles(this.selected, hittedTile);
-                this.board.Collect();
+                this.board.CollectMatches();
                 this.selected = null;
             }
             else
@@ -128,7 +127,7 @@ public class GameManager : Singleton<GameManager>
             if (neighbor)
             {
                 this.board.SwapTiles(this.selected, neighbor);
-                this.board.Collect();
+                this.board.CollectMatches();
             }
 
             this.selected = null;
