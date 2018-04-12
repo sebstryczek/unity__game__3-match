@@ -7,9 +7,7 @@ public class BoardTile : MonoBehaviour
 
     public int Row { get; private set; }
     public int Column { get; private set; }
-
     public TileType Type { get; private set; }
-
     public bool HasType
     {
         get

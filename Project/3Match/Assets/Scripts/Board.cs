@@ -182,6 +182,7 @@ public class Board
         }
 
         BoardTile[] matches = this.GetMatches();
+
         if (matches.Length > 0)
         {
             this.CollectMatches(matches);

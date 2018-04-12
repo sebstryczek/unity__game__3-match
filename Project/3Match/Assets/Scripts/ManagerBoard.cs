@@ -71,6 +71,7 @@ public class ManagerBoard : Singleton<ManagerBoard>
                 this.board.SwapTiles(this.selectedTile, hittedTile);
 
                 BoardTile[] matches = this.board.GetMatches();
+                
                 if (matches.Length > 0)
                 {
                     this.board.CollectMatches(matches);
@@ -113,6 +114,7 @@ public class ManagerBoard : Singleton<ManagerBoard>
                 this.board.SwapTiles(this.selectedTile, hittedTile);
                 
                 BoardTile[] matches = this.board.GetMatches();
+
                 if (matches.Length > 0)
                 {
                     this.board.CollectMatches(matches);
