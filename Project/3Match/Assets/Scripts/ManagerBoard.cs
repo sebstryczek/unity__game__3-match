@@ -69,7 +69,17 @@ public class ManagerBoard : Singleton<ManagerBoard>
             if (this.selectedTile.IsNeighbor(hittedTile))
             {
                 this.board.SwapTiles(this.selectedTile, hittedTile);
-                this.board.CollectMatches();
+
+                BoardTile[] matches = this.board.GetMatches();
+                if (matches.Length > 0)
+                {
+                    this.board.CollectMatches(matches);
+                }
+                else
+                {
+                    this.board.SwapTiles(this.selectedTile, hittedTile);
+                }
+
                 this.selectedTile = null;
             }
             else
@@ -100,8 +110,17 @@ public class ManagerBoard : Singleton<ManagerBoard>
 
             if (neighborTile != null)
             {
-                this.board.SwapTiles(this.selectedTile, neighborTile);
-                this.board.CollectMatches();
+                this.board.SwapTiles(this.selectedTile, hittedTile);
+                
+                BoardTile[] matches = this.board.GetMatches();
+                if (matches.Length > 0)
+                {
+                    this.board.CollectMatches(matches);
+                }
+                else
+                {
+                    this.board.SwapTiles(this.selectedTile, hittedTile);
+                }
             }
 
             this.selectedTile = null;

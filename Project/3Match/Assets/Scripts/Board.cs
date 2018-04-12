@@ -104,10 +104,10 @@ public class Board
 
         return null;
     }
-    
-    public void CollectMatches()
+
+    public BoardTile[] GetMatches()
     {
-        List<BoardTile> matches = new List<BoardTile>(); 
+        List<BoardTile> result = new List<BoardTile>(); 
         for (int rowIndex = 0; rowIndex < this.RowsCount; rowIndex++)
         {
             for (int columnIndex = 0; columnIndex < this.ColumnsCount; columnIndex++)
@@ -123,9 +123,9 @@ public class Board
 
                     if (tile.IsTheSameType(prevTile) && tile.IsTheSameType(nextTile))
                     {
-                        if (!matches.Contains(prevTile)) matches.Add(prevTile);
-                        if (!matches.Contains(tile)) matches.Add(tile);
-                        if (!matches.Contains(nextTile)) matches.Add(nextTile);
+                        if (!result.Contains(prevTile)) result.Add(prevTile);
+                        if (!result.Contains(tile)) result.Add(tile);
+                        if (!result.Contains(nextTile)) result.Add(nextTile);
                     }
                 }
 
@@ -136,24 +136,22 @@ public class Board
 
                     if (tile.IsTheSameType(prevTile) && tile.IsTheSameType(nextTile))
                     {
-                        if (!matches.Contains(prevTile)) matches.Add(prevTile);
-                        if (!matches.Contains(tile)) matches.Add(tile);
-                        if (!matches.Contains(nextTile)) matches.Add(nextTile);
+                        if (!result.Contains(prevTile)) result.Add(prevTile);
+                        if (!result.Contains(tile)) result.Add(tile);
+                        if (!result.Contains(nextTile)) result.Add(nextTile);
                     }
                 }
             }
         }
-        
-        if (matches.Count > 0)
-        {
-            ManagerState.Instance.AddPoints(matches.Count);
-            matches.ForEach(x => x.SetType(null));
-            this.ReorderTiles();
-        }
-        else
-        {
-            this.FillEmptyTiles();
-        }
+
+        return result.ToArray();
+    }
+    
+    public void CollectMatches(BoardTile[] matches)
+    {
+        ManagerState.Instance.AddPoints(matches.Length);
+        System.Array.ForEach(matches, x => x.SetType(null));
+        this.ReorderTiles();
     }
 
     private void ReorderTiles()
@@ -183,7 +181,15 @@ public class Board
             }
         }
 
-        this.CollectMatches();
+        BoardTile[] matches = this.GetMatches();
+        if (matches.Length > 0)
+        {
+            this.CollectMatches(matches);
+        }
+        else
+        {
+            this.FillEmptyTiles();
+        }
     }
 
     public void FillEmptyTiles()
