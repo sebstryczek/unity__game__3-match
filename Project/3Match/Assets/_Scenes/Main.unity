@@ -183,6 +183,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 69803922}
+  - component: {fileID: 69803924}
+  - component: {fileID: 69803923}
   - component: {fileID: 69803921}
   m_Layer: 0
   m_Name: _Scripts
@@ -199,20 +201,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 69803920}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebbd39b80b00bdc48860fcb98c27f0df, type: 3}
+  m_Script: {fileID: 11500000, guid: 6206c3387890f6545805991a843792f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabEmpty: {fileID: 1144941181305136, guid: 3d52eab3d2eb5fa45b59d70abdd8fcab,
-    type: 2}
-  prefabTile: {fileID: 1563757896245132, guid: ec17cfea626eec54885b8665f9afc2a9, type: 2}
-  tileTypes:
-  - {fileID: 11400000, guid: 1e23a56e7a8ca164183b5efc56932639, type: 2}
-  - {fileID: 11400000, guid: b8556e7261c6d124bbf493b69cfa096c, type: 2}
-  - {fileID: 11400000, guid: d4b4e3628aa39364f87f92702ec6a947, type: 2}
-  - {fileID: 11400000, guid: 9a428ca1ac49fba4697365dd5e6d4548, type: 2}
-  - {fileID: 11400000, guid: 52b7925528a5fff49adf6203657a6d87, type: 2}
-  rowsCount: 8
-  columnsCount: 5
+  score: 0
   uiTextScore: {fileID: 137581283}
 --- !u!4 &69803922
 Transform:
@@ -227,6 +219,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &69803923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 69803920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72dbc09694b0e74438ab4a9bbfffbbb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabEmpty: {fileID: 1144941181305136, guid: 3d52eab3d2eb5fa45b59d70abdd8fcab,
+    type: 2}
+  prefabTile: {fileID: 1563757896245132, guid: ec17cfea626eec54885b8665f9afc2a9, type: 2}
+  tileTypes:
+  - {fileID: 11400000, guid: 1e23a56e7a8ca164183b5efc56932639, type: 2}
+  - {fileID: 11400000, guid: b8556e7261c6d124bbf493b69cfa096c, type: 2}
+  - {fileID: 11400000, guid: d4b4e3628aa39364f87f92702ec6a947, type: 2}
+  - {fileID: 11400000, guid: 9a428ca1ac49fba4697365dd5e6d4548, type: 2}
+  - {fileID: 11400000, guid: 52b7925528a5fff49adf6203657a6d87, type: 2}
+  rowsCount: 8
+  columnsCount: 5
+--- !u!114 &69803924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 69803920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d45dbc2e4ec0e4ea7efc0571322b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &137581281
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +263,7 @@ GameObject:
   - component: {fileID: 137581284}
   - component: {fileID: 137581283}
   m_Layer: 5
-  m_Name: Text
+  m_Name: TextScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

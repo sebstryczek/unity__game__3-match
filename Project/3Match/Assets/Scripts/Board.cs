@@ -6,108 +6,81 @@ public class Board
 {
     public int RowsCount { get; private set; }
     public int ColumnsCount { get; private set; }
-
-    private GameObject go = null;
-    private Tile[] tiles = null;
+    private BoardTile[,] tiles = null;
 
     public Board(int rowsCount, int columnsCount)
     {
-        this.go = new GameObject("Board");
         this.RowsCount = rowsCount;
         this.ColumnsCount = columnsCount;
-        this.tiles = new Tile[this.RowsCount * this.ColumnsCount];
+        this.tiles = new BoardTile[this.RowsCount, this.ColumnsCount];
     }
 
-    public void AddTile(Tile tile)
+    public void AddTile(BoardTile tile)
     {
-        this.tiles[tile.Row * this.ColumnsCount + tile.Column] = tile;
+        this.tiles[tile.Row, tile.Column] = tile;
     }
 
-    public Tile GetTile(int rowIndex, int columnIndex)
+    public BoardTile GetTile(int rowIndex, int columnIndex)
     {
-        return System.Array.Find(this.tiles, x => x && x.Row == rowIndex && x.Column == columnIndex);
-    }
-
-    public Tile GetTileAtPosition(Vector2 position)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.zero);
+        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= RowsCount || columnIndex >= ColumnsCount)
+        {
+             return null;
+        }
         
-        if (hit.collider)
-        {
-            return hit.collider.gameObject.GetComponent<Tile>();
-        }
-
-        return null;
+        return this.tiles[rowIndex, columnIndex];
     }
 
-    public bool AreNeighbors(Tile t1, Tile t2)
-    {
-        if (t1.Row == t2.Row)
-        {
-            return t1.Column == t2.Column - 1 || t1.Column == t2.Column + 1;
-        }
-
-        if (t1.Column == t2.Column)
-        {
-            return t1.Row == t2.Row - 1 || t1.Row == t2.Row + 1;
-        }
-
-        return false;
-    }
-
-    public void SwapTiles(Tile t1, Tile t2)
+    public void SwapTiles(BoardTile t1, BoardTile t2)
     {
         int t1Row = t1.Row;
         int t1Column = t1.Column;
         t1.SetCoords(t2.Row, t2.Column);
         t2.SetCoords(t1Row, t1Column);
 
+        this.tiles[t1.Row, t1.Column] = t1;
+        this.tiles[t2.Row, t2.Column] = t2;
+        
         Vector2 firstPos = t1.transform.position;
         t1.transform.position = t2.transform.position;
         t2.transform.position = firstPos;
-
-        int t1Index = System.Array.IndexOf(this.tiles, t1);
-        int t2Index = System.Array.IndexOf(this.tiles, t2);
-        this.tiles[t1Index] = t2;
-        this.tiles[t2Index] = t1;
     }
 
     public TileType[] GetForbiddenTypes(int rowIndex, int columnIndex)
     {
         List<TileType> result = new List<TileType>();
         
-        Tile bottom1 = this.GetTile(rowIndex - 1, columnIndex);
-        Tile bottom2 = this.GetTile(rowIndex - 2, columnIndex);
-        if (bottom1 != null && bottom2 != null && bottom1.type == bottom2.type && !result.Contains(bottom1.type))
+        BoardTile bottom1 = this.GetTile(rowIndex - 1, columnIndex);
+        BoardTile bottom2 = this.GetTile(rowIndex - 2, columnIndex);
+        if (bottom1 && bottom2 && bottom1.HasType && bottom1.IsTheSameType(bottom2))
         {
-            result.Add(bottom1.type);
+            if (!result.Contains(bottom1.Type)) result.Add(bottom1.Type);
         }
         
-        Tile left1 = this.GetTile(rowIndex, columnIndex - 1);
-        Tile left2 = this.GetTile(rowIndex, columnIndex - 2);
-        if (left1 != null && left2 != null && left1.type == left2.type && !result.Contains(left1.type))
+        BoardTile left1 = this.GetTile(rowIndex, columnIndex - 1);
+        BoardTile left2 = this.GetTile(rowIndex, columnIndex - 2);
+        if (left1 && left2 && left1.HasType && left1.IsTheSameType(left2))
         {
-            result.Add(left1.type);
+            if (!result.Contains(left1.Type)) result.Add(left1.Type);
         }
         
-        Tile top1 = this.GetTile(rowIndex + 1, columnIndex);
-        Tile top2 = this.GetTile(rowIndex + 2, columnIndex);
-        if (top1 != null && top2 != null && top1.type == top2.type && !result.Contains(top1.type))
+        BoardTile top1 = this.GetTile(rowIndex + 1, columnIndex);
+        BoardTile top2 = this.GetTile(rowIndex + 2, columnIndex);
+        if (top1 && top2 && top1.HasType && top1.IsTheSameType(top2))
         {
-            result.Add(top1.type);
+            if (!result.Contains(top1.Type)) result.Add(top1.Type);
         }
         
-        Tile right1 = this.GetTile(rowIndex, columnIndex + 1);
-        Tile right2 = this.GetTile(rowIndex, columnIndex + 2);
-        if (right1 != null && right2 != null && right1.type == right2.type && !result.Contains(right1.type))
+        BoardTile right1 = this.GetTile(rowIndex, columnIndex + 1);
+        BoardTile right2 = this.GetTile(rowIndex, columnIndex + 2);
+        if (right1 && right2 && right1.HasType && right1.IsTheSameType(right2))
         {
-            result.Add(right1.type);
+            if (!result.Contains(right1.Type)) result.Add(right1.Type);
         }
 
         return result.ToArray();
     }
 
-    public Tile FindNeighborTitle(Tile root, float angle)
+    public BoardTile FindNeighborTitle(BoardTile root, float angle)
     {
         if (angle > 320 || angle > 0 && angle < 40)
         {
@@ -134,49 +107,47 @@ public class Board
     
     public void CollectMatches()
     {
-        List<Tile> matches = new List<Tile>(); 
+        List<BoardTile> matches = new List<BoardTile>(); 
         for (int rowIndex = 0; rowIndex < this.RowsCount; rowIndex++)
         {
             for (int columnIndex = 0; columnIndex < this.ColumnsCount; columnIndex++)
             {
-                Tile tile = this.GetTile(rowIndex, columnIndex);
+                BoardTile tile = this.GetTile(rowIndex, columnIndex);
 
-                if (tile.type == null) continue;
+                if (!tile.HasType) continue;
 
                 if (columnIndex > 0 && columnIndex < this.ColumnsCount - 1)
                 {
-                    Tile prev = this.GetTile(rowIndex, columnIndex - 1);
-                    Tile next = this.GetTile(rowIndex, columnIndex + 1);
+                    BoardTile prevTile = this.GetTile(rowIndex, columnIndex - 1);
+                    BoardTile nextTile = this.GetTile(rowIndex, columnIndex + 1);
 
-                    if (prev.type == tile.type && tile.type == next.type)
+                    if (tile.IsTheSameType(prevTile) && tile.IsTheSameType(nextTile))
                     {
-                        if (!matches.Contains(prev)) matches.Add(prev);
+                        if (!matches.Contains(prevTile)) matches.Add(prevTile);
                         if (!matches.Contains(tile)) matches.Add(tile);
-                        if (!matches.Contains(next)) matches.Add(next);
+                        if (!matches.Contains(nextTile)) matches.Add(nextTile);
                     }
                 }
 
                 if (rowIndex > 0 && rowIndex < this.RowsCount - 1)
                 {
-                    Tile prev = this.GetTile(rowIndex - 1, columnIndex);
-                    Tile next = this.GetTile(rowIndex + 1, columnIndex);
+                    BoardTile prevTile = this.GetTile(rowIndex - 1, columnIndex);
+                    BoardTile nextTile = this.GetTile(rowIndex + 1, columnIndex);
 
-                    if (prev.type == tile.type && tile.type == next.type)
+                    if (tile.IsTheSameType(prevTile) && tile.IsTheSameType(nextTile))
                     {
-                        if (!matches.Contains(prev)) matches.Add(prev);
+                        if (!matches.Contains(prevTile)) matches.Add(prevTile);
                         if (!matches.Contains(tile)) matches.Add(tile);
-                        if (!matches.Contains(next)) matches.Add(next);
+                        if (!matches.Contains(nextTile)) matches.Add(nextTile);
                     }
                 }
             }
         }
         
-        GameManager.Instance.AddPoints(matches.Count);
-
-        matches.ForEach(x => x.Clear());
-
         if (matches.Count > 0)
         {
+            ManagerState.Instance.AddPoints(matches.Count);
+            matches.ForEach(x => x.SetType(null));
             this.ReorderTiles();
         }
         else
@@ -187,22 +158,27 @@ public class Board
 
     private void ReorderTiles()
     {
-        for (int i = 0; i < this.tiles.Length; i++)
+        for (int i = 0; i < this.RowsCount; i++)
         {
-            Tile tile = this.tiles[i];
-            
-            if (tile.type == null && tile.Row < this.RowsCount - 1)
+            for (int j = 0; j < this.ColumnsCount; j++)
             {
-                int nextRow = tile.Row + 1;
-
-                while(nextRow < this.RowsCount && this.GetTile(nextRow, tile.Column).type == null)
+                BoardTile tile = this.GetTile(i, j);
+                
+                if (!tile.HasType && tile.Row < this.RowsCount - 1)
                 {
-                    nextRow++;
-                }
+                    int nextRow = tile.Row + 1;
+                    BoardTile nextTile = this.GetTile(nextRow, tile.Column);
 
-                if (nextRow < this.RowsCount)
-                {
-                    this.SwapTiles(tile, this.GetTile(nextRow, tile.Column));
+                    while(nextRow < this.RowsCount && !nextTile.HasType)
+                    {
+                        nextRow++;
+                        nextTile = this.GetTile(nextRow, tile.Column);
+                    }
+
+                    if (nextRow < this.RowsCount)
+                    {
+                        this.SwapTiles(tile, nextTile);
+                    }
                 }
             }
         }
@@ -212,14 +188,18 @@ public class Board
 
     public void FillEmptyTiles()
     {
-        for (int i = 0; i < this.tiles.Length; i++)
+        for (int i = 0; i < this.RowsCount; i++)
         {
-            Tile tile = this.tiles[i];
-
-            if (tile.type == null)
+            for (int j = 0; j < this.ColumnsCount; j++)
             {
-                TileType type = GameManager.Instance.GetRandomType(tile);
-                tile.SetType(type);
+                BoardTile tile = this.GetTile(i, j);
+
+                if (!tile.HasType)
+                {
+                    TileType[] forbiddenTypes = this.GetForbiddenTypes(tile.Row, tile.Column);
+                    TileType type = ManagerBoard.Instance.GetRandomType(forbiddenTypes);
+                    tile.SetType(type);
+                }
             }
         }
     }
